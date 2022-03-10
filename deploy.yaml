@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jupyter-deployment
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: jupyter
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: jupyter
+    spec:
+      containers:
+      - name: jupyter
+        image: jupyter-college:0.0.1
+        ports:
+        - containerPort: 8080
+        command: ["/opt/run.sh"]
+        args: ["test3"]
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+            nvidia.com/gpu: 0
+          requests:
+            memory: "128Mi"
+            cpu: "0.1"
+            
+            
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jupyter-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: jupyter
+  ports:
+    - port: 8080
+      nodePort: 30001
